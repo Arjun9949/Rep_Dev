@@ -1,0 +1,66 @@
+{
+	"name": "DF_Jdwsample_Json_2_Csv",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_dwsample_json",
+						"type": "DatasetReference"
+					},
+					"name": "SourceJson"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_dwsample2json_2_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flatten1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WHO as string,",
+				"          WEEK as (NUMBER as integer, EXPENSE as (WHAT as string, AMOUNT as double)[])[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> SourceJson",
+				"SourceJson foldDown(unrollMultiple(WEEK,WEEK.EXPENSE),",
+				"     mapColumn(",
+				"          WHO,",
+				"          Number = WEEK.NUMBER,",
+				"          WHAT = WEEK.EXPENSE.WHAT,",
+				"          AMOUNT = WEEK.EXPENSE.AMOUNT",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 aggregate(groupBy(WHO,",
+				"          Number,",
+				"          WHAT),",
+				"     Amount = sum(AMOUNT)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['dwsample2json.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
