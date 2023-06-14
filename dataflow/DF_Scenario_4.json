@@ -1,0 +1,115 @@
+{
+	"name": "DF_Scenario_4",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_Products_2",
+						"type": "DatasetReference"
+					},
+					"name": "Products"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_Sales_1234",
+						"type": "DatasetReference"
+					},
+					"name": "Sales"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Prod_Sales1234_Csv_Json",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ProductKey as short,",
+				"          ProductSubcategoryKey as short,",
+				"          ProductSKU as string,",
+				"          ProductName as string,",
+				"          ModelName as string,",
+				"          ProductDescription as string,",
+				"          ProductColor as string,",
+				"          ProductSize as string,",
+				"          ProductStyle as string,",
+				"          ProductCost as double,",
+				"          ProductPrice as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Products",
+				"source(output(",
+				"          OrderDate as string,",
+				"          StockDate as string,",
+				"          OrderNumber as string,",
+				"          ProductKey as short,",
+				"          CustomerKey as short,",
+				"          TerritoryKey as short,",
+				"          OrderLineItem as short,",
+				"          OrderQuantity as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Sales",
+				"Products, Sales join(Products@ProductKey == Sales@ProductKey,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          ProductKey = Products@ProductKey,",
+				"          ProductName,",
+				"          ProductCost,",
+				"          ProductPrice,",
+				"          OrderDate,",
+				"          OrderNumber,",
+				"          CustomerKey,",
+				"          TerritoryKey,",
+				"          OrderLineItem,",
+				"          OrderQuantity",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(Orders = @(Order_Number=OrderNumber,",
+				"          Order_date=OrderDate,",
+				"          CustomerKey=CustomerKey,",
+				"          TerritoryKey=TerritoryKey,",
+				"          OrderLineItem=OrderLineItem,",
+				"          OrderQuantity=OrderQuantity)) ~> derivedColumn1",
+				"derivedColumn1 aggregate(groupBy(ProductKey,",
+				"          ProductName),",
+				"     Orders = collect(Orders)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Prod_Sales.json'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

@@ -1,0 +1,198 @@
+{
+	"name": "PL_Scenario_3_practice",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SnowflakeSink",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ProductKey",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "PRODUCTKEY",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductSubcategoryKey",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "PRODUCTSUBCATEGORYKEY",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductSKU",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRODUCTSKU",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductName",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRODUCTNAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ModelName",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MODELNAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductDescription",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRODUCTDESCRIPTION",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductColor",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRODUCTCOLOR",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductSize",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRODUCTSIZE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductStyle",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRODUCTSTYLE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductCost",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "PRODUCTCOST",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductPrice",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "PRODUCTPRICE",
+									"type": "Int64"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_products",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Products_from_blob",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-20.eastus.logic.azure.com:443/workflows/247eb28a0db64f7db46adf705770c5b1/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=bVN60iCIwDl7Alp2gvjLLRYV_VhJCwMGU4VsD2ixf4g",
+					"method": "POST",
+					"body": {
+						"value": "{\n        \"Activity\":\"@{pipeline().DataFactory}\",\n        \"Error\": \"@{activity('Copy data1').Error.message}\",\n        \"File_Name\":@{pipeline().TriggerId},\n        \"Pipeline_Id\": \"@{pipeline().RunId}\",\n        \"Pipeline_Name\": \"@{pipeline().Pipeline}\",\n        \"sink\":\"@{pipeline().TriggerName}\",\n        \"source\": \"@{pipeline()?.TriggeredByPipelineRunId}\"\n}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-06-05T09:53:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

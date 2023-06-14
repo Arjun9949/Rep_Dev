@@ -1,0 +1,68 @@
+{
+	"name": "DF_Json_2_Csv",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Actor_Actress_blob",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Actors_Actress_Csv_From_Json",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flatten1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Movies as (Category as string, Desc as (Name as string, Details as (KnownAs as string, Awards as (Nandi as integer, Cinemaa as integer, Siima as integer)[], Remuneration as integer, Hits as (industry as integer, Super as integer, Flops as integer)[], age as integer, Height as double, mStatus as string, sRate as string)[])[])[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> source1",
+				"source1 foldDown(unrollMultiple(Movies.Desc,Movies.Desc.Details,Movies.Desc.Details.Awards,Movies.Desc.Details.Hits),",
+				"     mapColumn(",
+				"          Artist_Type = Movies.Category,",
+				"          Artist_Name = Movies.Desc.Name,",
+				"          KnownAs = Movies.Desc.Details.KnownAs,",
+				"          Nandi_Awards = Movies.Desc.Details.Awards.Nandi,",
+				"          Cinemaa_Awards = Movies.Desc.Details.Awards.Cinemaa,",
+				"          Siima_Awards = Movies.Desc.Details.Awards.Siima,",
+				"          Remuneration = Movies.Desc.Details.Remuneration,",
+				"          industry_Hits = Movies.Desc.Details.Hits.industry,",
+				"          Super_Hits = Movies.Desc.Details.Hits.Super,",
+				"          Flops = Movies.Desc.Details.Hits.Flops,",
+				"          age = Movies.Desc.Details.age,",
+				"          Height = Movies.Desc.Details.Height,",
+				"          mStatus = Movies.Desc.Details.mStatus,",
+				"          sRate = Movies.Desc.Details.sRate",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"flatten1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Actors&Actress.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

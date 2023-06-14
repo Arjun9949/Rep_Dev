@@ -1,0 +1,21 @@
+{
+	"name": "DS_Snw_Cust_History",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Snowflake_Para",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DataBase": "ARJUN",
+				"Schema": "PUBLIC"
+			}
+		},
+		"annotations": [],
+		"type": "SnowflakeTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "PUBLIC",
+			"table": "CUST_HISTORY"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,179 @@
+{
+	"name": "DF_Scenario_13",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_Cust",
+						"type": "DatasetReference"
+					},
+					"name": "SourceCust"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_Prodd",
+						"type": "DatasetReference"
+					},
+					"name": "SourceProd"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_sales_15_6_17",
+						"type": "DatasetReference"
+					},
+					"name": "SourceSales"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Sales_15_16_17",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "cast1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerKey as short,",
+				"          Prefix as string,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          BirthDate as string,",
+				"          MaritalStatus as string,",
+				"          Gender as string,",
+				"          EmailAddress as string,",
+				"          AnnualIncome as string,",
+				"          TotalChildren as short,",
+				"          EducationLevel as string,",
+				"          Occupation as string,",
+				"          HomeOwner as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SourceCust",
+				"source(output(",
+				"          ProductKey as short,",
+				"          ProductSubcategoryKey as short,",
+				"          ProductSKU as string,",
+				"          ProductName as string,",
+				"          ModelName as string,",
+				"          ProductDescription as string,",
+				"          ProductColor as string,",
+				"          ProductSize as string,",
+				"          ProductStyle as string,",
+				"          ProductCost as double,",
+				"          ProductPrice as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SourceProd",
+				"source(output(",
+				"          OrderDate as string,",
+				"          StockDate as string,",
+				"          OrderNumber as string,",
+				"          ProductKey as short,",
+				"          CustomerKey as short,",
+				"          TerritoryKey as short,",
+				"          OrderLineItem as short,",
+				"          OrderQuantity as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SourceSales",
+				"SourceProd, SourceSales join(SourceProd@ProductKey == SourceSales@ProductKey,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          CustomerKey,",
+				"          ProductKey = SourceSales@ProductKey,",
+				"          ProductName,",
+				"          ModelName,",
+				"          ProductColor,",
+				"          ProductSize,",
+				"          ProductStyle,",
+				"          ProductCost,",
+				"          ProductPrice,",
+				"          OrderNumber,",
+				"          OrderDate,",
+				"          OrderQuantity",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"SourceCust derive({Full Name} = concat(Prefix,'.',FirstName,' ',LastName)) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          CustomerKey,",
+				"          {Full Name},",
+				"          Gender,",
+				"          EmailAddress",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2, select1 join(select2@CustomerKey == select1@CustomerKey,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 select(mapColumn(",
+				"          OrderNumber,",
+				"          OrderDate,",
+				"          CustomerKey = select1@CustomerKey,",
+				"          {Full Name},",
+				"          Gender = {select2@Gender},",
+				"          EmailAddress = {select2@EmailAddress},",
+				"          ProductKey,",
+				"          ProductName,",
+				"          ModelName,",
+				"          ProductColor,",
+				"          ProductSize,",
+				"          ProductStyle,",
+				"          ProductCost,",
+				"          ProductPrice,",
+				"          OrderQuantity",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 cast(output(",
+				"          OrderDate as date 'dd-MM-yyyy'",
+				"     ),",
+				"     errors: true) ~> cast1",
+				"cast1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Sales_!5_16_17'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

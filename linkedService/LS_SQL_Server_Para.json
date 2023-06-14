@@ -1,0 +1,25 @@
+{
+	"name": "LS_SQL_Server_Para",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"DataBase": {
+				"type": "String"
+			},
+			"Schema": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=LAPTOP-J7NJCG9Q;initial catalog=@{linkedService().DataBase}",
+			"userName": "LAPTOP-J7NJCG9Q\\Mallikarjuna",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJmODVjYzIxMy1iNWE2LTRhZmMtOWJkNi03NTk5MWRhOTYzMjQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IR-Self-Hosted",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

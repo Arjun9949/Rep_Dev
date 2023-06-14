@@ -1,0 +1,106 @@
+{
+	"name": "DS_Actor_Actress_blob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Blob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Actors&actress-json - Copy.json",
+				"container": "dev"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"Movies": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"Category": {
+								"type": "string"
+							},
+							"Desc": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"Name": {
+											"type": "string"
+										},
+										"Details": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"KnownAs": {
+														"type": "string"
+													},
+													"Awards": {
+														"type": "array",
+														"items": {
+															"type": "object",
+															"properties": {
+																"Nandi": {
+																	"type": "integer"
+																},
+																"Cinemaa": {
+																	"type": "integer"
+																},
+																"Siima": {
+																	"type": "integer"
+																}
+															}
+														}
+													},
+													"Remuneration": {
+														"type": "integer"
+													},
+													"Hits": {
+														"type": "array",
+														"items": {
+															"type": "object",
+															"properties": {
+																"industry": {
+																	"type": "integer"
+																},
+																"Super": {
+																	"type": "integer"
+																},
+																"Flops": {
+																	"type": "integer"
+																}
+															}
+														}
+													},
+													"age": {
+														"type": "integer"
+													},
+													"Height": {
+														"type": "number"
+													},
+													"mStatus": {
+														"type": "string"
+													},
+													"sRate": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

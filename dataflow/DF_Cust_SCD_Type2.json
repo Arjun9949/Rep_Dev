@@ -1,0 +1,273 @@
+{
+	"name": "DF_Cust_SCD_Type2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_Customers",
+						"type": "DatasetReference"
+					},
+					"name": "SourceCust"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Snw_Cust_History",
+						"type": "DatasetReference"
+					},
+					"name": "TgtCust"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Snw_Cust_History",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Snw_Cust_History",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Snw_Cust_History",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "filter2"
+				},
+				{
+					"name": "lookup2"
+				},
+				{
+					"name": "filter3"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn5"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerKey as integer,",
+				"          Prefix as string,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          BirthDate as string,",
+				"          MaritalStatus as string,",
+				"          Gender as string,",
+				"          EmailAddress as string,",
+				"          AnnualIncome as string,",
+				"          TotalChildren as integer,",
+				"          EducationLevel as string,",
+				"          Occupation as string,",
+				"          HomeOwner as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SourceCust",
+				"source(output(",
+				"          CUST_KEY as integer,",
+				"          PREFIX as string,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          BIRTHDATE as date,",
+				"          MARITALSTATUS as string,",
+				"          GENDER as string,",
+				"          EMAIL as string,",
+				"          ANNUALINCOME as double,",
+				"          TOTALCHILDREN as decimal(38,0),",
+				"          EDUCATIONLEVEL as string,",
+				"          OCCUPATION as string,",
+				"          START_DATE as timestamp,",
+				"          END_DATE as timestamp,",
+				"          IS_ACTIVE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> TgtCust",
+				"SourceCust derive(AnnualIncome = toLong(replace(AnnualIncome,',',''),'$########')*82.52) ~> derivedColumn1",
+				"derivedColumn1, TgtCust lookup(CustomerKey == CUST_KEY,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 filter(isNull(CUST_KEY) || ( SourceCust@Prefix!=TgtCust@PREFIX || LastName!=LAST_NAME|| SourceCust@MaritalStatus!=TgtCust@MARITALSTATUS || EmailAddress!=EMAIL || derivedColumn1@AnnualIncome!=TgtCust@ANNUALINCOME || SourceCust@TotalChildren!=TgtCust@TOTALCHILDREN || SourceCust@EducationLevel!=TgtCust@EDUCATIONLEVEL || SourceCust@Occupation!=TgtCust@OCCUPATION )) ~> filter1",
+				"derivedColumn2 select(mapColumn(",
+				"          CustomerKey,",
+				"          Prefix = SourceCust@Prefix,",
+				"          FirstName,",
+				"          LastName,",
+				"          BirthDate = SourceCust@BirthDate,",
+				"          MaritalStatus = SourceCust@MaritalStatus,",
+				"          Gender = SourceCust@Gender,",
+				"          EmailAddress,",
+				"          AnnualIncome = derivedColumn1@AnnualIncome,",
+				"          TotalChildren = SourceCust@TotalChildren,",
+				"          EducationLevel = SourceCust@EducationLevel,",
+				"          Occupation = SourceCust@Occupation,",
+				"          START_DATE,",
+				"          END_DATE,",
+				"          IS_ACTIVE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"filter1 derive(START_DATE = currentTimestamp(),",
+				"          IS_ACTIVE = 'Yes',",
+				"          END_DATE = '') ~> derivedColumn2",
+				"TgtCust filter(IS_ACTIVE=='Yes') ~> filter2",
+				"derivedColumn3, filter2 lookup(CustomerKey == CUST_KEY,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup2",
+				"lookup2 filter(!isNull(CUST_KEY) && ( SourceCust@Prefix!=TgtCust@PREFIX || LastName!=LAST_NAME|| SourceCust@MaritalStatus!=TgtCust@MARITALSTATUS || EmailAddress!=EMAIL || derivedColumn3@AnnualIncome!=TgtCust@ANNUALINCOME || SourceCust@TotalChildren!=TgtCust@TOTALCHILDREN || SourceCust@EducationLevel!=TgtCust@EDUCATIONLEVEL || SourceCust@Occupation!=TgtCust@OCCUPATION )) ~> filter3",
+				"SourceCust derive(AnnualIncome = toLong(replace(AnnualIncome,',',''),'$########')*82.52) ~> derivedColumn3",
+				"filter3 derive(END_DATE = currentTimestamp(),",
+				"          IS_ACTIVE = 'No') ~> derivedColumn4",
+				"derivedColumn4 select(mapColumn(",
+				"          CUST_KEY,",
+				"          PREFIX = TgtCust@PREFIX,",
+				"          FIRST_NAME,",
+				"          LAST_NAME,",
+				"          BIRTHDATE = TgtCust@BIRTHDATE,",
+				"          MARITALSTATUS = TgtCust@MARITALSTATUS,",
+				"          GENDER = TgtCust@GENDER,",
+				"          EMAIL,",
+				"          ANNUALINCOME = TgtCust@ANNUALINCOME,",
+				"          TOTALCHILDREN = TgtCust@TOTALCHILDREN,",
+				"          EDUCATIONLEVEL = TgtCust@EDUCATIONLEVEL,",
+				"          OCCUPATION = TgtCust@OCCUPATION,",
+				"          START_DATE,",
+				"          END_DATE,",
+				"          IS_ACTIVE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 alterRow(updateIf(1==1)) ~> AlterRow1",
+				"select1 split(isNull(END_DATE),",
+				"     disjoint: false) ~> split1@(EndDateNull, NotNull)",
+				"split1@NotNull derive(END_DATE = '') ~> derivedColumn5",
+				"split1@EndDateNull sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          CUST_KEY = CustomerKey,",
+				"          PREFIX = Prefix,",
+				"          FIRST_NAME = FirstName,",
+				"          LAST_NAME = LastName,",
+				"          BIRTHDATE = BirthDate,",
+				"          MARITALSTATUS = MaritalStatus,",
+				"          GENDER = Gender,",
+				"          EMAIL = EmailAddress,",
+				"          ANNUALINCOME = AnnualIncome,",
+				"          TOTALCHILDREN = TotalChildren,",
+				"          EDUCATIONLEVEL = EducationLevel,",
+				"          OCCUPATION = Occupation,",
+				"          START_DATE,",
+				"          END_DATE,",
+				"          IS_ACTIVE",
+				"     )) ~> sink1",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['CUST_KEY'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          CUST_KEY,",
+				"          PREFIX,",
+				"          FIRST_NAME,",
+				"          LAST_NAME,",
+				"          BIRTHDATE,",
+				"          MARITALSTATUS,",
+				"          GENDER,",
+				"          EMAIL,",
+				"          ANNUALINCOME,",
+				"          TOTALCHILDREN,",
+				"          EDUCATIONLEVEL,",
+				"          OCCUPATION,",
+				"          START_DATE,",
+				"          END_DATE,",
+				"          IS_ACTIVE",
+				"     )) ~> sink2",
+				"derivedColumn5 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          CUST_KEY = CustomerKey,",
+				"          PREFIX = Prefix,",
+				"          FIRST_NAME = FirstName,",
+				"          LAST_NAME = LastName,",
+				"          BIRTHDATE = BirthDate,",
+				"          MARITALSTATUS = MaritalStatus,",
+				"          GENDER = Gender,",
+				"          EMAIL = EmailAddress,",
+				"          ANNUALINCOME = AnnualIncome,",
+				"          TOTALCHILDREN = TotalChildren,",
+				"          EDUCATIONLEVEL = EducationLevel,",
+				"          OCCUPATION = Occupation,",
+				"          START_DATE,",
+				"          END_DATE,",
+				"          IS_ACTIVE",
+				"     )) ~> sink3"
+			]
+		}
+	}
+}

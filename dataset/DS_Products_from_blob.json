@@ -1,0 +1,88 @@
+{
+	"name": "DS_Products_from_blob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Snowflake_Para",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DataBase": "ARJUN",
+				"Schema": "PUBLIC"
+			}
+		},
+		"annotations": [],
+		"type": "SnowflakeTable",
+		"schema": [
+			{
+				"name": "PRODUCTKEY",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTSUBCATEGORYKEY",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTSKU",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTNAME",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "MODELNAME",
+				"type": "VARCHAR",
+				"precision": 100,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTDESCRIPTION",
+				"type": "VARCHAR",
+				"precision": 200,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTCOLOR",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTSIZE",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTSTYLE",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTCOST",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTPRICE",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "PUBLIC",
+			"table": "PRODUCTS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

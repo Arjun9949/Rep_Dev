@@ -1,0 +1,21 @@
+{
+	"name": "SqlServerTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Server_Para",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DataBase": "db1",
+				"Schema": "db1"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "db1",
+			"table": "students"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

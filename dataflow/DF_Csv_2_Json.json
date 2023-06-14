@@ -1,0 +1,79 @@
+{
+	"name": "DF_Csv_2_Json",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Actors_Actress_Csv_From_Json",
+						"type": "DatasetReference"
+					},
+					"name": "ActorsActress"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Json_From_Csv_Actors_Actress",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Artist_Type as string,",
+				"          Artist_Name as string,",
+				"          KnownAs as string,",
+				"          Nandi_Awards as short,",
+				"          Cinemaa_Awards as short,",
+				"          Siima_Awards as short,",
+				"          Remuneration as short,",
+				"          industry_Hits as short,",
+				"          Super_Hits as short,",
+				"          Flops as short,",
+				"          age as short,",
+				"          Height as double,",
+				"          mStatus as string,",
+				"          sRate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ActorsActress",
+				"ActorsActress derive(Desc = @(Name=Artist_Name,",
+				"          KnownAs=KnownAs,",
+				"          Age=age,",
+				"          Height=Height,",
+				"          mStatus=mStatus,",
+				"          Remuneration=Remuneration,",
+				"          sRate=sRate,",
+				"          Awards=@(Nandi=Nandi_Awards,",
+				"          Siima=Siima_Awards,",
+				"          Cinemaa=Cinemaa_Awards),",
+				"          Hits=@(Industry=industry_Hits,",
+				"          Super=Super_Hits,",
+				"          Flops=Flops))) ~> derivedColumn1",
+				"derivedColumn1 aggregate(groupBy(category = Artist_Type),",
+				"     Desc = collect(Desc)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Actors&Actress.json'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

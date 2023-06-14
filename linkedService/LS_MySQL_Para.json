@@ -1,0 +1,24 @@
+{
+	"name": "LS_MySQL_Para",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"DataBase": {
+				"type": "String"
+			},
+			"Schema": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "MySql",
+		"typeProperties": {
+			"connectionString": "server=localhost;port=3306;database=@{linkedService().DataBase};user=root;sslmode=1;usesystemtruststore=1",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIyNGU1MDE1Yy02NjI1LTQ1YzctODRkYi00MGY2MGIwMWIyZmYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IR-Self-Hosted",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

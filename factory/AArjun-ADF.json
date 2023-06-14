@@ -1,0 +1,9 @@
+{
+	"name": "AArjun-ADF",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "b24d21c9-f407-4030-b300-8466c2ccb7b2",
+		"tenantId": "9e08465c-00f7-4dd3-b374-cafa34f14a59"
+	}
+}
