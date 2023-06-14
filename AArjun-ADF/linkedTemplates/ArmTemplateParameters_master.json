@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "AArjun-ADF"
+		},
+		"LS_Azure_SQL_Server_connectionString": {
+			"value": ""
+		},
+		"LS_Blob_connectionString": {
+			"value": ""
+		},
+		"LS_Gen2_accountKey": {
+			"value": ""
+		},
+		"LS_MySQL_Para_connectionString": {
+			"value": ""
+		},
+		"LS_SQL_Server_Para_connectionString": {
+			"value": "Integrated Security=True;Data Source=LAPTOP-J7NJCG9Q;Initial Catalog=@{linkedService().DataBase}"
+		},
+		"LS_SQL_Server_Para_password": {
+			"value": ""
+		},
+		"LS_Snowflake_Para_connectionString": {
+			"value": ""
+		},
+		"LS_Blob_SAS_URI_sasUri": {
+			"value": ""
+		},
+		"LS_Gen2_properties_typeProperties_url": {
+			"value": "https://gen2arjun37.dfs.core.windows.net/"
+		},
+		"LS_SQL_Server_Para_properties_typeProperties_userName": {
+			"value": "LAPTOP-J7NJCG9Q\\Mallikarjuna"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

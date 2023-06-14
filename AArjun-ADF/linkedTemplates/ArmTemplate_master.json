@@ -1,0 +1,153 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "AArjun-ADF"
+		},
+		"LS_Azure_SQL_Server_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_Azure_SQL_Server'"
+		},
+		"LS_Blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_Blob'"
+		},
+		"LS_Gen2_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_Gen2'"
+		},
+		"LS_MySQL_Para_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_MySQL_Para'"
+		},
+		"LS_SQL_Server_Para_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_SQL_Server_Para'",
+			"defaultValue": "Integrated Security=True;Data Source=LAPTOP-J7NJCG9Q;Initial Catalog=@{linkedService().DataBase}"
+		},
+		"LS_SQL_Server_Para_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SQL_Server_Para'"
+		},
+		"LS_Snowflake_Para_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_Snowflake_Para'"
+		},
+		"LS_Blob_SAS_URI_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'LS_Blob_SAS_URI'"
+		},
+		"LS_Gen2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://gen2arjun37.dfs.core.windows.net/"
+		},
+		"LS_SQL_Server_Para_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "LAPTOP-J7NJCG9Q\\Mallikarjuna"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "AArjun-ADF_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LS_Azure_SQL_Server_connectionString": {
+						"value": "[parameters('LS_Azure_SQL_Server_connectionString')]"
+					},
+					"LS_Blob_connectionString": {
+						"value": "[parameters('LS_Blob_connectionString')]"
+					},
+					"LS_Gen2_accountKey": {
+						"value": "[parameters('LS_Gen2_accountKey')]"
+					},
+					"LS_MySQL_Para_connectionString": {
+						"value": "[parameters('LS_MySQL_Para_connectionString')]"
+					},
+					"LS_SQL_Server_Para_connectionString": {
+						"value": "[parameters('LS_SQL_Server_Para_connectionString')]"
+					},
+					"LS_SQL_Server_Para_password": {
+						"value": "[parameters('LS_SQL_Server_Para_password')]"
+					},
+					"LS_Snowflake_Para_connectionString": {
+						"value": "[parameters('LS_Snowflake_Para_connectionString')]"
+					},
+					"LS_Blob_SAS_URI_sasUri": {
+						"value": "[parameters('LS_Blob_SAS_URI_sasUri')]"
+					},
+					"LS_Gen2_properties_typeProperties_url": {
+						"value": "[parameters('LS_Gen2_properties_typeProperties_url')]"
+					},
+					"LS_SQL_Server_Para_properties_typeProperties_userName": {
+						"value": "[parameters('LS_SQL_Server_Para_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "AArjun-ADF_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'AArjun-ADF_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "AArjun-ADF_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'AArjun-ADF_ArmTemplate_1')]"
+			]
+		}
+	]
+}
