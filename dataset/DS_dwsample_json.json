@@ -1,0 +1,51 @@
+{
+	"name": "DS_dwsample_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Blob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "dwsample2-json (1).json",
+				"container": "dev"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"WHO": {
+					"type": "string"
+				},
+				"WEEK": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"NUMBER": {
+								"type": "integer"
+							},
+							"EXPENSE": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"WHAT": {
+											"type": "string"
+										},
+										"AMOUNT": {
+											"type": "number"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
