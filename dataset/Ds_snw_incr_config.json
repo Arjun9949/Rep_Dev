@@ -1,0 +1,43 @@
+{
+	"name": "Ds_snw_incr_config",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Snowflake_Para",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DataBase": {
+					"value": "@dataset().Source_DB_Name",
+					"type": "Expression"
+				},
+				"Schema": {
+					"value": "@dataset().Source_Schema_Name",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"Source_DB_Name": {
+				"type": "String"
+			},
+			"Source_Schema_Name": {
+				"type": "String"
+			},
+			"Config_Table_Name": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "SnowflakeTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().Source_Schema_Name",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().Config_Table_Name",
+				"type": "Expression"
+			}
+		}
+	}
+}

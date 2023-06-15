@@ -1,0 +1,43 @@
+{
+	"name": "DS_SNW_Tgt_Orders",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Snowflake_Para",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DataBase": {
+					"value": "@dataset().Target_DB",
+					"type": "Expression"
+				},
+				"Schema": {
+					"value": "@dataset().Target_Schema",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"Target_DB": {
+				"type": "String"
+			},
+			"Target_Schema": {
+				"type": "String"
+			},
+			"Target_Table": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "SnowflakeTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().Target_Schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().Target_Table",
+				"type": "Expression"
+			}
+		}
+	}
+}
