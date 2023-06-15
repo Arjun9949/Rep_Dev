@@ -1,0 +1,12 @@
+{
+	"name": "DS_snw_source_orders",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Snowflake_Para",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SnowflakeTable",
+		"schema": []
+	}
+}
